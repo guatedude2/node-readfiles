@@ -36,7 +36,7 @@ An optional object parameter with the following properties:
 * **hidden**: a boolean value wether to exclude hidden files prefixed with a `.` (defaults to true)
 
 
-### callback(err, filename, content)
+### callback(err, filename, content, stat)
 
 The callback function that is triggered everytime a file is read. If there's an error while reading the file the `err` parameter will contain the error that occured, otherwise the if `readContents` is true, the `contents` parameter will be populated with the contents of the file encoded using the `encoding` option.
 
