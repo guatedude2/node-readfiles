@@ -18,6 +18,10 @@
   ],
   "author": "Alejandro Gonzalez Sole",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guatedude2/node-readfiles.git"
+  },
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^2.4.5",
