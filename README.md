@@ -36,9 +36,12 @@ An optional object parameter with the following properties:
 * **hidden**: a boolean value wether to exclude hidden files prefixed with a `.` (defaults to true)
 
 
-### callback(err, filename, content, stat)
+### callback(err, filename, content, stat, next)
 
-The callback function that is triggered everytime a file is read. If there's an error while reading the file the `err` parameter will contain the error that occured, otherwise the if `readContents` is true, the `contents` parameter will be populated with the contents of the file encoded using the `encoding` option.
+The optional callback function is triggered everytime a file is found. If there's an error while reading the file the `err` parameter will contain the error that occured, When `readContents` is true, the `contents` parameter will be populated with the contents of the file encoded using the `encoding` option. For convenience the `stat` result object is passed to the callback for you to use.
+
+If you're doing a long operation and want to pause on every file, have the callback return `false`, will cause `readfiles` to pause until you call `next`. See bellow for an example.
+
 
 <span id="read-files">[1]</span> The `contents` parameter will be `null` when the `readContents` option is `false`.
 
@@ -142,6 +145,22 @@ readfiles('/path/to/dir/', {
 }, function (err, content, filename) {
   if (err) throw err;
   console.log('File ' + filename);
+});
+
+```
+
+This example waits for async calls to occur on every file.
+
+```javascript
+var readfiles = require('readfiles');
+
+readfiles('/path/to/dir/', function (err, content, filename, stat, next) {
+  if (err) throw err;
+  setTimeout(function () {
+    console.log('File ' + filename);
+    next();
+  }, 3000);
+  return false;
 });
 
 ```
