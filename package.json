@@ -1,6 +1,6 @@
 {
   "name": "node-readfiles",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A lightweight Node.js module to recursively read files in a directory",
   "main": "index.js",
   "scripts": {
