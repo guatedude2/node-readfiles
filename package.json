@@ -1,0 +1,26 @@
+{
+  "name": "node-readfiles",
+  "version": "0.0.1",
+  "description": "A lightweight Node.js module to recursively read files in a directory",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "readfiles",
+    "read",
+    "readfile",
+    "readdir",
+    "dir",
+    "path",
+    "pattern",
+    "fs"
+  ],
+  "author": "Alejandro Gonzalez Sole",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "mock-fs": "^3.9.0"
+  }
+}
