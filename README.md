@@ -146,5 +146,37 @@ readfiles('/path/to/dir/', {
 
 ```
 
+A simple example that works like `find`
+
+```javascript
+var readfiles = require('node-readfiles');
+var path = require('path');
+
+function fileSize(size) {
+  var unit = 'B';
+  if (size > 1000000000) {
+    unit = 'T';
+    size /= 1000000000;
+  }else if (size > 1000000) {
+    unit = 'M';
+    size /= 1000000;
+  }else if (size > 1000) {
+    unit = 'K';
+    size /= 1000;
+  }
+  return (Math.round(size * 10) / 10) + unit;
+}
+
+var basepath = path.resolve(process.cwd(), process.argv.pop());
+
+readfiles(basepath, {
+  readContents: false
+}, function (err, filename, content, stat) {
+  console.log(filename, fileSize(stat.size), (stat.mode & 0777).toString(8));
+}, function (err, files, count) {
+  console.log('\nTotal of', count, 'file(s) found\n');
+});
+```
+
 ## License
 MIT licensed (See LICENSE.txt)
