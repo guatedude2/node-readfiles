@@ -1,7 +1,7 @@
 {
   "name": "node-readfiles",
   "version": "0.0.8",
-  "description": "A lightweight Node.js module to recursively read files in a directory",
+  "description": "A lightweight Node.js module to recursively read files in a directory using ES6 Promises",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -26,5 +26,8 @@
     "chai": "^3.5.0",
     "mocha": "^2.4.5",
     "mock-fs": "^3.9.0"
+  },
+  "dependencies": {
+    "es6-promise": "^3.2.1"
   }
 }

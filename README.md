@@ -1,5 +1,5 @@
 # node-readfiles
-A lightweight node.js module to recursively read files in a directory.
+A lightweight node.js module to recursively read files in a directory using ES6 Promises.
 
 ## Installation
 
@@ -13,8 +13,8 @@ You can safely add `readfiles` anywhere in your project.
 var readfiles = require('node-readfiles');
 ```
 
-### readfiles(dir, [options], callback, [doneCallback])
-Asynchronusly read the files in a directory
+### _Promise(files):_ readfiles(dir, [options], [callback])
+Asynchronusly read the files in a directory returning a **Promise**.
 
 #### dir
 A relative or absolute path of the directory to read files.
@@ -25,7 +25,7 @@ An optional object parameter with the following properties:
 
 * **reverse**: a bollean value that reverses the order of the list of files before traversing them (defaults to false)
 * **filenameFormat**: one of `readfiles.FULL_PATH`, `readfiles.RELATIVE`, or `readfiles.FILENAME`, wether the callback's returns the full-path, relative-path or only the filenames of the traversed files. (default is `readfiles.RELATIVE`)
-* **doneOnError**: a bollean value wether to stop and trigger the "doneCallback" when an error occurs (defaults to true)
+* **rejectOnError**: a bollean value wether to stop and trigger the "doneCallback" when an error occurs (defaults to true)
 * **filter**: a string, or an array of strings of path expression that match the files being read (defaults to '**')
   * `?` matches one character
   * `*` matches zero or more characters
@@ -34,34 +34,47 @@ An optional object parameter with the following properties:
 * **encoding**: a string with the encoding used when reading a file (defaults to 'utf8')
 * **depth**: an integer value which limits the number sub-directories levels to traverse for the given path where `-1` is infinte, and `0` is none (defaults to -1)
 * **hidden**: a boolean value wether to exclude hidden files prefixed with a `.` (defaults to true)
+* **async**: a boolean value which enables/disables asynchronous traversal of the tree. When set to `true`, the `next()` in the `callback` must be called. (defaults to false)
 
 
 ### callback(err, filename, content, stat, next)
 
 The optional callback function is triggered everytime a file is found. If there's an error while reading the file the `err` parameter will contain the error that occured, When `readContents` is true, the `contents` parameter will be populated with the contents of the file encoded using the `encoding` option. For convenience the `stat` result object is passed to the callback for you to use.
 
-If you're doing a long operation and want to pause on every file, have the callback return `false`, will cause `readfiles` to pause until you call `next`. See bellow for an example.
+When working with asynchronous operations, you can set the `async` to `true`. This will enabled you to continue traversal of the directory when you call `next()`. See bellow for an example.
 
 
 <span id="read-files">[1]</span> The `contents` parameter will be `null` when the `readContents` option is `false`.
 
-### doneCallback(err, files, count)
+### _Promise(files)_
 
-The callback function that is triggered once all the files have been read, passing the number of files read and an array with the full path of all files.
+When calling `readfiles`, an ES6 Promise is returned with an array of all the files that were found. You can then call `then` or `catch` to see if `readfiles` encountered an error.
+
+```javascript
+var readfiles = require('node-readfiles');
+
+readfiles('/path/to/dir/', function (err, filename, contents) {
+  if (err) throw err;
+  console.log('File ' + filename + ':');
+  console.log(content);
+}).then(function (files) {
+  console.log('Read ' + files.length + ' file(s)');
+}).catch(function (err) {
+  console.log('Error reading files:', err.message);
+});
+```
 
 ## Examples
 
 The default behavior, is to recursively list all files in a directory. By default `readfiles` will exclude all dot files.
 
 ```javascript
-var readfiles = require('readfiles');
-
 readfiles('/path/to/dir/', function (err, filename, contents) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
-}, function (err, count, files) {
-  console.log('Read ' + count + ' file(s)');
+}).then(function (files) {
+  console.log('Read ' + files.length + ' file(s)');
   console.log(files.join('\n'));
 });
 ```
@@ -69,33 +82,29 @@ readfiles('/path/to/dir/', function (err, filename, contents) {
 Read all files in a directory, excluding sub-directories.
 
 ```javascript
-var readfiles = require('readfiles');
-
 readfiles('/path/to/dir/', {
   depth: 0
 }, function (err, content, filename) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
-}, function (err, count, files) {
-  console.log('Read ' + count + ' file(s)');
+}).then(function (files) {
+  console.log('Read ' + files.length + ' file(s)');
   console.log(files.join('\n'));
 });
 ```
 
-The above can also be accomplished using `filter`.
+The above can also be accomplished using the `filter` option.
 
 ```javascript
-var readfiles = require('readfiles');
-
 readfiles('/path/to/dir/', {
   filter: '*' // instead of the default '**'
 }, function (err, content, filename) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
-}, function (err, count, files) {
-  console.log('Read ' + count + ' file(s)');
+}).then(function (files) {
+  console.log('Read ' + files.length + ' file(s)');
   console.log(files.join('\n'));
 });
 ```
@@ -103,16 +112,14 @@ readfiles('/path/to/dir/', {
 Recursively read all files with "txt" extension in a directory and display the contents.
 
 ```javascript
-var readfiles = require('readfiles');
-
 readfiles('/path/to/dir/', {
   filter: '*.txt'
 }, function (err, content, filename) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
-}, function (err, count, files) {
-  console.log('Read ' + count + ' text file(s)');
+}).then(function (files) {
+  console.log('Read ' + files.length + ' file(s)');
 });
 
 ```
@@ -120,16 +127,14 @@ readfiles('/path/to/dir/', {
 Recursively read all files with that match "t?t" in a directory and display the contents.
 
 ```javascript
-var readfiles = require('readfiles');
-
 readfiles('/path/to/dir/', {
   filter: '*.t?t'
 }, function (err, content, filename) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
-}, function (err, count, files) {
-  console.log('Read ' + count + ' text file(s)');
+}).then(function (files) {
+  console.log('Read ' + files.length + ' file(s)');
 });
 
 ```
@@ -137,8 +142,6 @@ readfiles('/path/to/dir/', {
 Recursively list all json files in a directory including all sub-directories, without reading the files.
 
 ```javascript
-var readfiles = require('readfiles');
-
 readfiles('/path/to/dir/', {
   filter: '*.json',
   readContents: false
@@ -149,12 +152,12 @@ readfiles('/path/to/dir/', {
 
 ```
 
-This example waits for async calls to occur on every file.
+When making asynchronous calls on files, you can enable asynchronous support by setting the `async` to `true`.
 
 ```javascript
-var readfiles = require('readfiles');
-
-readfiles('/path/to/dir/', function (err, content, filename, stat, next) {
+readfiles('/path/to/dir/', {
+  async: true
+}, function (err, content, filename, stat, next) {
   if (err) throw err;
   setTimeout(function () {
     console.log('File ' + filename);
@@ -163,38 +166,6 @@ readfiles('/path/to/dir/', function (err, content, filename, stat, next) {
   return false;
 });
 
-```
-
-A simple example that works like `find`
-
-```javascript
-var readfiles = require('node-readfiles');
-var path = require('path');
-
-function fileSize(size) {
-  var unit = 'B';
-  if (size > 1000000000) {
-    unit = 'T';
-    size /= 1000000000;
-  }else if (size > 1000000) {
-    unit = 'M';
-    size /= 1000000;
-  }else if (size > 1000) {
-    unit = 'K';
-    size /= 1000;
-  }
-  return (Math.round(size * 10) / 10) + unit;
-}
-
-var basepath = path.resolve(process.cwd(), process.argv.pop());
-
-readfiles(basepath, {
-  readContents: false
-}, function (err, filename, content, stat) {
-  console.log(filename, fileSize(stat.size), (stat.mode & 0777).toString(8));
-}, function (err, files, count) {
-  console.log('\nTotal of', count, 'file(s) found\n');
-});
 ```
 
 ## License

@@ -7,12 +7,12 @@ var fixtures = {
   deepError: require('./fixtures/deep-error')
 };
 
-describe('readfiles method', function() {
+describe('readfiles', function() {
   after(function () {
     mock.restore();
   });
 
-  describe('callbacks', function () {
+  describe('defaults', function () {
     beforeEach(function () {
       mock(fixtures.flat);
     });
@@ -39,15 +39,15 @@ describe('readfiles method', function() {
       });
     });
 
-    it('calls the done callback when finished traversing all files', function (done) {
-      readfiles('/path/to/dir', null, function (err, files, count) {
-        expect(count).to.equal(4);
+    it('resolves the promise when finished traversing all files', function (done) {
+      readfiles('/path/to/dir').then(function (files) {
+        expect(files.length).to.equal(4);
         done();
       });
     });
 
     it('calls the done callback with an error on a path', function(done) {
-      readfiles('/fake/invalid/dir', null, function (err, files, count) {
+      readfiles('/fake/invalid/dir').catch(function (err) {
         expect(err.message).to.equal('ENOENT, no such file or directory \'/fake/invalid/dir\'');
         done();
       });
@@ -63,7 +63,7 @@ describe('readfiles method', function() {
     it('callback returns the list of files in reverse order when \'reverse\' is true', function(done) {
       readfiles('/path/to/dir', {
         reverse: true
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal([
           'subdir/test789.txt',
           'subdir/test456.dat',
@@ -106,7 +106,7 @@ describe('readfiles method', function() {
         filenameFormat: readfiles.FULL_PATH
       }, function (err, filename) {
         expect(filename).to.equal(expectFiles[count++]);
-      }, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -134,7 +134,7 @@ describe('readfiles method', function() {
         filenameFormat: readfiles.RELATIVE
       }, function (err, filename) {
         expect(filename).to.equal(expectFiles[count++]);
-      }, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -162,22 +162,22 @@ describe('readfiles method', function() {
         filenameFormat: readfiles.FILENAME
       }, function (err, filename) {
         expect(filename).to.equal(expectFiles[count++]);
-      }, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
     });
 
-    it('does not call done when one file throws an error and \'doneOnError\' is false', function(done) {
+    it('does not call done when one file throws an error and \'rejectOnError\' is false', function(done) {
       mock(fixtures.deepError);
 
       fileCount = 0;
       readfiles('/path/to/dir', {
-        doneOnError: false
+        rejectOnError: false
       }, function (err, filename) {
         fileCount++;
-      }, function (err, files, count) {
-        expect(count).to.equal(11);
+      }).then(function (files) {
+        expect(files.length).to.equal(11);
         done();
       });
     });
@@ -187,7 +187,7 @@ describe('readfiles method', function() {
         readContents: false
       }, function (err, filename, contents) {
         expect(contents).to.be.null;
-      }, function (err, files, count) {
+      }).then(function (files) {
         done();
       });
     });
@@ -215,7 +215,7 @@ describe('readfiles method', function() {
         encoding: null
       }, function (err, filename, contents) {
         expect(contents).to.equal(expectFiles[filename]);
-      }, function (err, files, count) {
+      }).then(function (files) {
         done();
       });
     });
@@ -238,7 +238,7 @@ describe('readfiles method', function() {
         depth: 1
       }, function (err, filename) {
         expect(filename).to.equal(expectFiles[count++]);
-      }, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -271,7 +271,7 @@ describe('readfiles method', function() {
         hidden: true
       }, function (err, filename) {
         expect(filename).to.equal(expectFiles[count++]);
-      }, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -289,7 +289,7 @@ describe('readfiles method', function() {
       ];
       readfiles('/path/to/dir', {
         filter: '*'
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -314,7 +314,7 @@ describe('readfiles method', function() {
       ];
       readfiles('/path/to/dir', {
         filter: '**'
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -327,7 +327,7 @@ describe('readfiles method', function() {
       ];
       readfiles('/path/to/dir', {
         filter: '*.txt'
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -347,7 +347,7 @@ describe('readfiles method', function() {
       ];
       readfiles('/path/to/dir', {
         filter: '**/*.txt'
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -361,7 +361,7 @@ describe('readfiles method', function() {
       ];
       readfiles('/path/to/dir', {
         filter: '**/abc123.txt'
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -373,7 +373,7 @@ describe('readfiles method', function() {
       ];
       readfiles('/path/to/dir', {
         filter: 'abc123.txt'
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -394,7 +394,7 @@ describe('readfiles method', function() {
       ];
       readfiles('/path/to/dir', {
         filter: '*/*'
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -407,7 +407,7 @@ describe('readfiles method', function() {
       ];
       readfiles('/path/to/dir', {
         filter: '*.t?t'
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -427,7 +427,7 @@ describe('readfiles method', function() {
       ];
       readfiles('/path/to/dir', {
         filter: '**/*.t??'
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
@@ -445,7 +445,7 @@ describe('readfiles method', function() {
       ];
       readfiles('/path/to/dir', {
         filter: ['**/*123*', '**/abc.*']
-      }, null, function (err, files, count) {
+      }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
       });
