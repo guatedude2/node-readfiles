@@ -44,6 +44,7 @@ describe('readfiles', function() {
         }
       });
       readfiles('/path/to/dir', function (err, filename, content) {
+        expect(content).to.be.null;
         expect(err.message).to.equal('ENOENT, no such file or directory \'/path/to/dir/badfile.txt\'');
       }).catch(function (err) {
         expect(err.message).to.equal('ENOENT, no such file or directory \'/path/to/dir/badfile.txt\'');
@@ -214,15 +215,19 @@ describe('readfiles', function() {
       });
     });
 
-    it('does not call done when one file throws an error and \'rejectOnError\' is false', function(done) {
+    it('does not stop reading files when one file throws an error and \'rejectOnError\' is false', function(done) {
       mock(fixtures.deepError);
 
-      fileCount = 0;
+      var fileCount = 0;
       readfiles('/path/to/dir', {
         rejectOnError: false
-      }, function (err, filename) {
+      }, function (err) {
+        if (err) {
+          expect(err.message).to.have.string('ENOENT, no such file or directory');
+        }
         fileCount++;
       }).then(function (files) {
+        expect(fileCount).to.equal(13);
         expect(files.length).to.equal(11);
         done();
       }).catch(function (err) {
@@ -231,11 +236,15 @@ describe('readfiles', function() {
     });
 
     it('callback does not return the file contents when \'readContents\' is false', function(done) {
+      var fileCount = 0;
       readfiles('/path/to/dir', {
         readContents: false
       }, function (err, filename, contents) {
         expect(contents).to.be.null;
+        fileCount++;
       }).then(function (files) {
+        expect(fileCount).to.equal(14);
+        expect(files.length).to.equal(14);
         done();
       }).catch(function (err) {
         done(err);
@@ -243,7 +252,6 @@ describe('readfiles', function() {
     });
 
     it('callback returns file contents encoded in the specified \'encoding\' type', function(done) {
-      var count = 0;
       var expectFiles = {
         'abc.txt': 'ABC',
         'abc123.txt': 'ABC123',
@@ -266,6 +274,7 @@ describe('readfiles', function() {
       }, function (err, filename, contents) {
         expect(contents).to.equal(expectFiles[filename]);
       }).then(function (files) {
+        expect(files.length).to.equal(14);
         done();
       }).catch(function (err) {
         done(err);
