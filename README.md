@@ -34,17 +34,30 @@ An optional object parameter with the following properties:
 * **encoding**: a string with the encoding used when reading a file (defaults to 'utf8')
 * **depth**: an integer value which limits the number sub-directories levels to traverse for the given path where `-1` is infinte, and `0` is none (defaults to -1)
 * **hidden**: a boolean value wether to exclude hidden files prefixed with a `.` (defaults to true)
-* **async**: a boolean value which enables/disables asynchronous traversal of the tree. When set to `true`, the `next()` in the `callback` must be called. (defaults to false)
 
 
-### callback(err, filename, content, stat, next)
+### callback(err, filename, content, stat)
 
 The optional callback function is triggered everytime a file is found. If there's an error while reading the file the `err` parameter will contain the error that occured, When `readContents` is true, the `contents` parameter will be populated with the contents of the file encoded using the `encoding` option. For convenience the `stat` result object is passed to the callback for you to use.
 
-When working with asynchronous operations, you can set the `async` to `true`. This will enabled you to continue traversal of the directory when you call `next()`. See bellow for an example.
-
-
 <span id="read-files">[1]</span> The `contents` parameter will be `null` when the `readContents` option is `false`.
+
+
+##### Asynchronous Callback
+When working with asynchronous operations, you can simply return a `function (next) { ... }` which will enabled you to completed your asynchronous operation until you call `next()`. 
+
+```javascript
+readfiles('/path/to/dir/', function (err, content, filename, stat) {
+  if (err) throw err;
+  return function (next) {
+    setTimeout(function () {
+      console.log('File ' + filename);
+      next();
+    }, 3000);
+  };
+});
+```
+
 
 ### _Promise(files)_
 
@@ -148,22 +161,6 @@ readfiles('/path/to/dir/', {
 }, function (err, content, filename) {
   if (err) throw err;
   console.log('File ' + filename);
-});
-
-```
-
-When making asynchronous calls on files, you can enable asynchronous support by setting the `async` to `true`.
-
-```javascript
-readfiles('/path/to/dir/', {
-  async: true
-}, function (err, content, filename, stat, next) {
-  if (err) throw err;
-  setTimeout(function () {
-    console.log('File ' + filename);
-    next();
-  }, 3000);
-  return false;
 });
 
 ```

@@ -1,4 +1,5 @@
 var expect = require('chai').expect;
+var sinon = require('sinon');
 var mock = require('mock-fs');
 var readfiles = require('../lib/readfiles');
 var fixtures = {
@@ -13,9 +14,16 @@ describe('readfiles', function() {
   });
 
   describe('defaults', function () {
+    var clock;
     beforeEach(function () {
+      clock = sinon.useFakeTimers();
       mock(fixtures.flat);
     });
+
+    afterEach(function () {
+      clock.restore();
+    });
+
 
     it('is called with the relative filename and the contents of each file', function(done) {
       var files = ['abc.txt', 'def.dat', 'test123.txt', 'test456.dat'];
@@ -24,6 +32,8 @@ describe('readfiles', function() {
         expect(filename).to.equal(files.shift());
         expect(content).to.equal(contents.shift());
         if (files.length === 0) done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -35,6 +45,8 @@ describe('readfiles', function() {
       });
       readfiles('/path/to/dir', function (err, filename, content) {
         expect(err.message).to.equal('ENOENT, no such file or directory \'/path/to/dir/badfile.txt\'');
+      }).catch(function (err) {
+        expect(err.message).to.equal('ENOENT, no such file or directory \'/path/to/dir/badfile.txt\'');
         done();
       });
     });
@@ -43,6 +55,8 @@ describe('readfiles', function() {
       readfiles('/path/to/dir').then(function (files) {
         expect(files.length).to.equal(4);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -50,6 +64,30 @@ describe('readfiles', function() {
       readfiles('/fake/invalid/dir').catch(function (err) {
         expect(err.message).to.equal('ENOENT, no such file or directory \'/fake/invalid/dir\'');
         done();
+      });
+    });
+
+    it('callback waits for an asynchronous process when returning a function in callback', function(done) {
+      var count = 0;
+      var expectFiles = [
+        'abc.txt',
+        'def.dat',
+        'test123.txt',
+        'test456.dat'
+      ];
+      readfiles('/path/to/dir', function (err, filename) {
+        return function (next) {
+          expect(filename).to.equal(expectFiles[count++]);
+          setTimeout(function () {
+            next();
+          }, 1000);
+          clock.tick(1000);
+        };
+      }).then(function (files) {
+        expect(files).to.deep.equal(expectFiles);
+        done();
+      }).catch(function (err) {
+        done(err);
       });
     });
   });
@@ -81,6 +119,8 @@ describe('readfiles', function() {
           'abc.txt'
         ]);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -101,7 +141,7 @@ describe('readfiles', function() {
         '/path/to/dir/subdir/test123.txt',
         '/path/to/dir/subdir/test456.dat',
         '/path/to/dir/subdir/test789.txt'
-      ]
+      ];
       readfiles('/path/to/dir', {
         filenameFormat: readfiles.FULL_PATH
       }, function (err, filename) {
@@ -109,6 +149,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -129,7 +171,7 @@ describe('readfiles', function() {
         'subdir/test123.txt',
         'subdir/test456.dat',
         'subdir/test789.txt'
-      ]
+      ];
       readfiles('/path/to/dir', {
         filenameFormat: readfiles.RELATIVE
       }, function (err, filename) {
@@ -137,6 +179,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -165,6 +209,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -179,6 +225,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files.length).to.equal(11);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -189,6 +237,8 @@ describe('readfiles', function() {
         expect(contents).to.be.null;
       }).then(function (files) {
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -217,6 +267,8 @@ describe('readfiles', function() {
         expect(contents).to.equal(expectFiles[filename]);
       }).then(function (files) {
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -241,6 +293,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -274,6 +328,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
   });
@@ -292,6 +348,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -317,6 +375,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -330,6 +390,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -350,6 +412,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -364,6 +428,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -376,6 +442,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -397,6 +465,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -410,6 +480,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -430,6 +502,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
 
@@ -448,6 +522,8 @@ describe('readfiles', function() {
       }).then(function (files) {
         expect(files).to.deep.equal(expectFiles);
         done();
+      }).catch(function (err) {
+        done(err);
       });
     });
   });
