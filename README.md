@@ -23,17 +23,17 @@ A relative or absolute path of the directory to read files.
 
 An optional object parameter with the following properties:
 
-* **reverse**: a bollean value that reverses the order of the list of files before traversing them (defaults to false)
-* **filenameFormat**: one of `readfiles.FULL_PATH`, `readfiles.RELATIVE`, or `readfiles.FILENAME`, wether the callback's returns the full-path, relative-path or only the filenames of the traversed files. (default is `readfiles.RELATIVE`)
-* **rejectOnError**: a bollean value wether to stop and trigger the "doneCallback" when an error occurs (defaults to true)
+* **reverse**: a boolean value that reverses the order of the list of files before traversing them (defaults to false)
+* **filenameFormat**: one of `readfiles.FULL_PATH`, `readfiles.RELATIVE`, or `readfiles.FILENAME`, whether the callback's returns the full-path, relative-path or only the filenames of the traversed files. (default is `readfiles.RELATIVE`)
+* **rejectOnError**: a boolean value whether to stop and trigger the "doneCallback" when an error occurs (defaults to true)
 * **filter**: a string, or an array of strings of path expression that match the files being read (defaults to '**')
   * `?` matches one character
   * `*` matches zero or more characters
   * `**` matches zero or more 'directories' in a path
-* **readContents**: a boolean value wether to read the file contents when traversing the files <sup>[\[1\]](#read-files)</sup> (defaults to true)
+* **readContents**: a boolean value whether to read the file contents when traversing the files <sup>[\[1\]](#read-files)</sup> (defaults to true)
 * **encoding**: a string with the encoding used when reading a file (defaults to 'utf8')
 * **depth**: an integer value which limits the number sub-directories levels to traverse for the given path where `-1` is infinte, and `0` is none (defaults to -1)
-* **hidden**: a boolean value wether to exclude hidden files prefixed with a `.` (defaults to true)
+* **hidden**: a boolean value whether to exclude hidden files prefixed with a `.` (defaults to true)
 
 
 ### callback(err, filename, content, stat)
