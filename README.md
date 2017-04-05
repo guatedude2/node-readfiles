@@ -47,7 +47,7 @@ The optional callback function is triggered everytime a file is found. If there'
 When working with asynchronous operations, you can simply return a `function (next) { ... }` which will enabled you to completed your asynchronous operation until you call `next()`. 
 
 ```javascript
-readfiles('/path/to/dir/', function (err, content, filename, stat) {
+readfiles('/path/to/dir/', function (err, filename, content, stat) {
   if (err) throw err;
   return function (next) {
     setTimeout(function () {
@@ -66,7 +66,7 @@ When calling `readfiles`, an ES6 Promise is returned with an array of all the fi
 ```javascript
 var readfiles = require('node-readfiles');
 
-readfiles('/path/to/dir/', function (err, filename, contents) {
+readfiles('/path/to/dir/', function (err, filename, content) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
@@ -82,7 +82,7 @@ readfiles('/path/to/dir/', function (err, filename, contents) {
 The default behavior, is to recursively list all files in a directory. By default `readfiles` will exclude all dot files.
 
 ```javascript
-readfiles('/path/to/dir/', function (err, filename, contents) {
+readfiles('/path/to/dir/', function (err, filename, content) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
@@ -97,7 +97,7 @@ Read all files in a directory, excluding sub-directories.
 ```javascript
 readfiles('/path/to/dir/', {
   depth: 0
-}, function (err, content, filename) {
+}, function (err, filename, content) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
@@ -112,7 +112,7 @@ The above can also be accomplished using the `filter` option.
 ```javascript
 readfiles('/path/to/dir/', {
   filter: '*' // instead of the default '**'
-}, function (err, content, filename) {
+}, function (err, filename, content) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
@@ -127,7 +127,7 @@ Recursively read all files with "txt" extension in a directory and display the c
 ```javascript
 readfiles('/path/to/dir/', {
   filter: '*.txt'
-}, function (err, content, filename) {
+}, function (err, filename, content) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
@@ -142,7 +142,7 @@ Recursively read all files with that match "t?t" in a directory and display the 
 ```javascript
 readfiles('/path/to/dir/', {
   filter: '*.t?t'
-}, function (err, content, filename) {
+}, function (err, filename, content) {
   if (err) throw err;
   console.log('File ' + filename + ':');
   console.log(content);
@@ -158,7 +158,7 @@ Recursively list all json files in a directory including all sub-directories, wi
 readfiles('/path/to/dir/', {
   filter: '*.json',
   readContents: false
-}, function (err, content, filename) {
+}, function (err, filename, content) {
   if (err) throw err;
   console.log('File ' + filename);
 });
