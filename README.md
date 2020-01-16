@@ -33,7 +33,7 @@ An optional object parameter with the following properties:
 * **readContents**: a boolean value whether to read the file contents when traversing the files <sup>[\[1\]](#read-files)</sup> (defaults to true)
 * **encoding**: a string with the encoding used when reading a file (defaults to 'utf8')
 * **depth**: an integer value which limits the number sub-directories levels to traverse for the given path where `-1` is infinte, and `0` is none (defaults to -1)
-* **hidden**: a boolean value whether to exclude hidden files prefixed with a `.` (defaults to true)
+* **hidden**: a boolean value whether to include hidden files prefixed with a `.` (defaults to false)
 
 
 ### callback(err, filename, content, stat)
