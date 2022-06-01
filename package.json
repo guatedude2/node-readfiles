@@ -7,7 +7,7 @@
     "start": "echo 'Not a runnable module' && exit 1",
     "test": "jest",
     "build": "tsc",
-    "lint": "eslint lib test",
+    "lint": "eslint src test",
     "preversion": "npm run lint && npm test"
   },
   "keywords": [
@@ -30,7 +30,8 @@
     "@types/jest": "^27.5.1",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
     "@typescript-eslint/parser": "^5.27.0",
-    "eslint": "^6.7.2",
+    "eslint": "^8.16.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^28.1.0",
     "prettier": "^2.6.2",

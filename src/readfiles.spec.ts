@@ -141,7 +141,7 @@ describe('readfiles', () => {
     });
 
     it("callback returns the relative path of the files when 'filenameFormat' is 'readfiles.RELATIVE'", done => {
-      let count = 0;
+      const count = 0;
       const expectFiles = [
         'abc.txt',
         'abc123.txt',
@@ -170,7 +170,7 @@ describe('readfiles', () => {
     });
 
     it("callback returns only the filename of the file when 'filenameFormat' is 'readfiles.FILENAME'", done => {
-      let count = 0;
+      const count = 0;
       const expectFiles = [
         'abc.txt',
         'abc123.txt',

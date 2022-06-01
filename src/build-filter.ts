@@ -7,19 +7,18 @@ export const buildFilter = (filtersParam: string | string[]) => {
   while (filters.length > 0) {
     const filter = filters.shift();
     filterArray.push(
-      '\\/?' +
-        filter
-          .replace(/\./g, '\\.')
-          .replace(/(\*?)(\*)(?!\*)/g, function (match, prefix) {
-            if (prefix == '*') {
-              return match;
-            }
-            return '[^\\/]*';
-          })
-          .replace(/\?/g, '[^\\/]?')
-          .replace(/\*\*/g, '.*')
-          .replace(/([\-\+\|])/g, '\\$1'),
+      `\\/?${filter
+        .replace(/\./g, '\\.')
+        .replace(/(\*?)(\*)(?!\*)/g, (match, prefix) => {
+          if (prefix === '*') {
+            return match;
+          }
+          return '[^\\/]*';
+        })
+        .replace(/\?/g, '[^\\/]?')
+        .replace(/\*\*/g, '.*')
+        .replace(/([\-\+\|])/g, '\\$1')}`,
     );
   }
-  return new RegExp('^' + filterArray.join('|') + '$', 'i');
+  return new RegExp(`^${filterArray.join('|')}$`, 'i');
 };

@@ -15,12 +15,14 @@ export interface ReadfilesOptions {
   encoding?: BufferEncoding;
 }
 
+type AsyncFunction = (done: () => void) => void;
+
 export type ReadfilesCallback = (
   err: Error | null,
   relativeFilename: string,
   content: string | null,
   stat: fs.Stats,
-) => void | Function;
+) => void | AsyncFunction;
 
 export function readfiles(dir: string): Promise<string[]>;
 export function readfiles(dir: string, callback?: ReadfilesCallback): Promise<string[]>;
@@ -37,6 +39,7 @@ export function readfiles(
     options = {};
   }
   options = options || {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   callback = typeof callback === 'function' ? callback : () => {};
 
   return new Promise((resolve, reject) => {
@@ -45,7 +48,8 @@ export function readfiles(
     const filterRegExp = options.filter && buildFilter(options.filter);
 
     const traverseDir = (dirPath, done) => {
-      fs.readdir(dirPath, (err, fileList) => {
+      fs.readdir(dirPath, (err, fileListProp) => {
+        let fileList = fileListProp;
         if (err) {
           // if rejectOnError is not false, reject the promise
           if (options.rejectOnError !== false) {
@@ -108,7 +112,7 @@ export function readfiles(
               });
             } else if (stat.isFile()) {
               // test filters, if it does not match move to next file
-              if (filterRegExp && !filterRegExp.test('/' + relFilename)) {
+              if (filterRegExp && !filterRegExp.test(`/${relFilename}`)) {
                 return next();
               }
 

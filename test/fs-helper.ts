@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as fs from 'fs';
 
 const fattenFixtures = (fixtureMap: Record<string, any>, rootPath = '') => {
