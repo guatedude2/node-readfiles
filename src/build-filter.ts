@@ -8,7 +8,7 @@ export const buildFilter = (filtersParam: string | string[]) => {
     const filter = filters.shift();
     filterArray.push(
       `\\/?${filter
-        .replace(/\./g, '\\.')
+        .replace(/([./\\])/g, '\\$1')
         .replace(/(\*?)(\*)(?!\*)/g, (match, prefix) => {
           if (prefix === '*') {
             return match;
