@@ -5,10 +5,24 @@ import { FilenameFormat } from './consts';
 
 describe('readfiles', () => {
   describe('defaults', () => {
-    let clock;
     beforeEach(() => {
-      jest.useFakeTimers();
+      // Always restore real timers first to ensure clean state
+      jest.useRealTimers();
+      // Use legacy fake timers for backwards compatibility with Node.js 22+ and older Jest versions
+      // Legacy timers avoid the performance property issue in Node.js 22+
+      // TypeScript types in Jest 28 expect string, but object syntax works at runtime for Jest 26+
+      try {
+        (jest.useFakeTimers as any)({ legacyFakeTimers: true });
+      } catch (e) {
+        // Fallback for older Jest versions (< 26) that don't support options
+        jest.useFakeTimers();
+      }
       mockFs(flatPathFixture);
+    });
+
+    afterEach(() => {
+      // Always restore real timers to prevent test interference
+      jest.useRealTimers();
     });
 
     it('should return the list of files and their contents', done => {
